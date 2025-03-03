@@ -1,3 +1,6 @@
+import java.net.URL
+import java.io.FileOutputStream
+
 plugins {
     `java-library`
     alias(libs.plugins.vanilla.gradle) apply false
@@ -48,6 +51,38 @@ tasks.register("generateData") {
 }
 
 tasks.processResources.get().dependsOn("generateData")
+
+abstract class DownloadFilesTask : DefaultTask() {
+
+    @get:Input
+    abstract val filesToDownload: MapProperty<String, String>
+
+    @get:OutputFiles
+    val outputFiles: FileCollection = project.layout.files(
+            filesToDownload.map { it.keys.map(project::file) }
+    )
+
+    @TaskAction
+    fun downloadFiles() {
+        filesToDownload.get().forEach { (destPath, url) ->
+            val destFile = project.file(destPath).apply { parentFile.mkdirs() }
+
+            logger.lifecycle("Downloading $url")
+            URL(url).openStream().use { input ->
+                FileOutputStream(destFile).use { output ->
+                    input.copyTo(output)
+                }
+            }
+            logger.lifecycle("Saved to $destFile")
+        }
+    }
+}
+
+val downloadMappings = tasks.register<DownloadFilesTask>("downloadMappings") {
+    filesToDownload.set(mapOf(
+            "mappings/sounds.json" to "https://raw.githubusercontent.com/GeyserMC/mappings/refs/heads/master/sounds.json"
+    ))
+}
 
 nexusPublishing {
     this.packageGroup.set("net.minestom")
