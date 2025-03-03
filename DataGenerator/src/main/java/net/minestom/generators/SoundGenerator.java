@@ -20,7 +20,7 @@ public final class SoundGenerator extends DataGenerator {
         JsonObject sounds = new JsonObject();
         var registry = BuiltInRegistries.SOUND_EVENT;
 
-        try (FileReader reader = new FileReader(Paths.get("mappings", "sound.json").toFile())) {
+        try (FileReader reader = new FileReader(Paths.get("mappings", "sounds.json").toFile())) {
             JsonObject mapping = JsonParser.parseReader(reader).getAsJsonObject();
 
             for (var soundEvent : registry) {
@@ -38,7 +38,7 @@ public final class SoundGenerator extends DataGenerator {
 
                 final var bedrockValues = mapping.getAsJsonObject(javaValue);
                 final var bedrockLocation = bedrockValues.get("playsound_mapping").getAsString();
-                final var bedrockSoundType = bedrockValues.get("bedrock_mapping").getAsString();
+                final var bedrockSoundType = bedrockValues.get("bedrock_mapping") != null ? bedrockValues.get("bedrock_mapping").getAsString() : "";
 
                 JsonObject sound = new JsonObject();
                 sound.addProperty("soundtype", bedrockSoundType);

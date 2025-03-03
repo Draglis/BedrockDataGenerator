@@ -19,6 +19,7 @@ dependencies {
 
 application {
     mainClass.set("net.minestom.datagen.DataGen")
+
 }
 
 java {
@@ -29,4 +30,8 @@ java {
 extensions.configure<MinecraftExtension> {
     version(libs.versions.minecraft.get())
     platform(org.spongepowered.gradle.vanilla.repository.MinecraftPlatform.SERVER)
+}
+
+tasks.getByName<JavaExec>("run") {
+    workingDir = projectDir.parentFile
 }
