@@ -23,6 +23,7 @@ public final class SoundGenerator extends DataGenerator {
         try (FileReader reader = new FileReader(Paths.get("mappings", "sounds.json").toFile())) {
             JsonObject mapping = JsonParser.parseReader(reader).getAsJsonObject();
 
+            int id = 0;
             for (var soundEvent : registry) {
                 final var javaLocation = registry.getKey(soundEvent);
                 if (javaLocation == null) {
@@ -37,13 +38,17 @@ public final class SoundGenerator extends DataGenerator {
                 }
 
                 final var bedrockValues = mapping.getAsJsonObject(javaValue);
-                final var bedrockLocation = bedrockValues.get("playsound_mapping").getAsString();
+                final var bedrockLocation = bedrockValues.get("playsound_mapping") != null ? bedrockValues.get("playsound_mapping").getAsString() : "";
+                if (bedrockLocation.isBlank() || sounds.has(bedrockLocation)) continue;
+
                 final var bedrockSoundType = bedrockValues.get("bedrock_mapping") != null ? bedrockValues.get("bedrock_mapping").getAsString() : "";
 
                 JsonObject sound = new JsonObject();
+                sound.addProperty("id", id);
                 sound.addProperty("soundtype", bedrockSoundType);
 
                 sounds.add(bedrockLocation, sound);
+                id++;
             }
         } catch (IOException e) {
             LOGGER.error("Failed to load mappings/sounds.json. Does the file even exist?", e);

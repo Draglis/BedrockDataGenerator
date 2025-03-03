@@ -80,7 +80,7 @@ abstract class DownloadFilesTask : DefaultTask() {
 
 val downloadMappings = tasks.register<DownloadFilesTask>("downloadMappings") {
     filesToDownload.set(mapOf(
-            "mappings/sounds.json" to "https://raw.githubusercontent.com/GeyserMC/mappings/refs/heads/master/sounds.json"
+            "mappings/sounds.json" to "https://raw.githubusercontent.com/Draglis/GeyserMCMappings/refs/heads/master/sounds.json"
     ))
 }
 
